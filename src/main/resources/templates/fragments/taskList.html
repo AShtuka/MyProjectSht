@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="eng"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="taskList">
+    <!-- Header(CategoryName) -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="dropdown">
+            <a href="#" id="dropdownMenuLinkCategory" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: black">
+                <span class="navbar-brand mb-0 h1" th:text="${category != null} ? ${category.categoryName} : 'Category Name'"></span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLinkCategory" th:if="${category != null}">
+                <a class="dropdown-item" th:href="@{'/delete/category/{id}'(id=${category.id})}">Delete category<i class="fa fa-trash" style="font-size:20px; text-indent: 25px"></i></a>
+            </div>
+        </div>
+        <!-- Згортає в одну кнопку усе що знаходиться у навбарі при змині розміру монітора -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerTask" aria-controls="navbarTogglerTask" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Add task Button - MIDDLE PART -->
+        <div class="collapse navbar-collapse" id="navbarTogglerTask">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
+
+        <form role="form" enctype="multipart/form-data" action="/addTask" method="post">
+        <div th:if="${category != null}">
+        <button type="button" class="btn btn-light text-left" data-toggle="modal" data-target="#taskModal">
+            Add task
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="taskModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="taskModalLabel">Add task</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" th:if="${category != null}" >
+                        <input class="form-control" name="taskName" type="text" placeholder="Task name">
+                        <input type="hidden" name="categoryId" th:value="${category.id}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-light">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        </form>
+        <button type="button" class="btn btn-light text-left"><i class="fa fa-sort-alpha-asc" style="font-size:20px"></i></button>
+        <button type="button" class="btn btn-light text-left"><i class="fa fa-sort-alpha-desc" style="font-size:20px"></i></i></button>
+        </div>
+    </nav>
+
+    <!-- Task table -->
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th class="text-left" style="width: 70%">Task</th>
+            <th class="dropdown text-center" style="width: 15%">Creation date
+                <a th:href="@{'/sort/{sortDate}' (sortDate = 'ASC')}"><i class="fa fa-chevron-circle-up"></i></a>
+                <a th:href="@{'/sort/{sortDate}' (sortDate = 'DESC')}"><i class="fa fa-chevron-circle-down"></i></a>
+            </th>
+            <th class="dropdown text-center" style="width: 15%">Completion date
+                <a th:href="@{'/sort/{sortDate}' (sortDate = 'ASC')}"><i class="fa fa-chevron-circle-up"></i></a>
+                <a th:href="@{'/sort/{sortDate}' (sortDate = 'DESC')}"><i class="fa fa-chevron-circle-down"></i></a>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="task : ${tasks}">
+            <td class="text-left"><a th:href="@{'/task/{id}'(id=${task.id})}" th:text="${task.taskName}" style="text-decoration: none; color: black">TaskName</a></td>
+            <td th:text="${#dates.format(task.dateCreate, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">Date</td>
+            <td th:text="${#dates.format(task.dateCompletion, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">None</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</html>

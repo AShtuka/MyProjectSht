@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="eng"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="subtaskList">
+    <nav class="navbar navbar-light bg-light">
+        <div class="dropdown">
+            <a href="#" id="dropdownMenuLinkTask" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: black">
+                <span class="navbar-brand mb-0 h1" th:text="${task != null} ? ${task.taskName} : 'Task Name'"></span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLinkTask" th:if="${task != null}">
+                <a class="dropdown-item" name="categoryId" th:value="${task.category.id}" th:href="@{'/delete/task/{taskId}/{categoryId}'(taskId=${task.id}, categoryId=${task.category.id})}">Delete task<i class="fa fa-trash" style="font-size:20px; text-indent: 25px"></i></a>
+            </div>
+        </div>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="customCheck1">
+            <label class="custom-control-label" for="customCheck1"><i class="fa fa-check" style="font-size:20px"></i></label>
+        </div>
+    </nav>
+
+    <nav class="nav flex-column"  th:if="${task != null}">
+        <form role="form" enctype="multipart/form-data" action="/setCompletionDate" method="post">
+        <input id="datepicker" name="dateCompletion" class="btn-block" placeholder="Set completion date" />
+        <script>
+            $('#datepicker').datepicker({
+                uiLibrary: 'bootstrap4'
+            });
+        </script>
+        </form>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th style="width: 5%"><i class="fa fa-check" style="font-size:20px"></i></th>
+                <th style="width: 90%">Subtask</th>
+                <th style="width: 5%"><i class="fa fa-trash" style="font-size:20px"></i></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="subtask : ${subtasks}">
+                <th>
+                    <div class="custom-control custom-checkbox">
+                         <input type="checkbox" class="custom-control-input" th:id="${subtask.id}">
+                         <label class="custom-control-label" th:for="${subtask.id}"></label>
+                    </div>
+                </th>
+                <td th:text="${subtask.subtaskName}" class="text-left">Mark of anything</td>
+                <td><a class="fa fa-times" th:href="@{'/delete/subtask/{subtaskId}/{taskId}'(subtaskId=${subtask.id}, taskId=${subtask.task.id})}" style="text-decoration: none; color: black"></a></td>
+            </tr>
+            </tbody>
+        </table>
+        <form role="form" enctype="multipart/form-data" action="/addSubtask" method="post">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <button class="btn btn-primary" type="submit" style="color: black"><a class="fa fa-plus" style="text-decoration: none; color: black"></a></button>
+            </div>
+            <input type="text" class="form-control" name="subtaskName" placeholder="Add subtask" aria-label="Add subtask" aria-describedby="basic-addon1">
+        </div>
+        </form>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th style="width: 95%"></th>
+                <th style="width: 5%"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="text-left">Your comment</td>
+                <td><a class="fa fa-times" href="#" style="text-decoration: none; color: black"></a></td>
+            </tr>
+            </tbody>
+        </table>
+        <a class="nav-link h6" href="#">Add comment</a>
+    </nav>
+</div>
+</html>
