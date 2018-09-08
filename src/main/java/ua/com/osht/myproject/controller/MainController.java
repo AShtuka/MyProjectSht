@@ -17,6 +17,7 @@ import ua.com.osht.myproject.service.TaskService;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +35,8 @@ public class MainController {
 
     private Category categoryTmp;
     private Task taskTmp;
-    private String sortDateMethod = "ASC";
+    private List<Subtask> subtasksTmp;
+    private String sortDateMethod = "ASC_Create";
 
     @GetMapping("/")
     public String list(Model model) {
@@ -44,8 +46,8 @@ public class MainController {
             model.addAttribute("tasks", tasks);
         }
         if (taskTmp != null){
-            List<Subtask> subtasks = subtaskService.findByTaskId(taskTmp.getId());
-            model.addAttribute("subtasks", subtasks);
+            subtasksTmp = subtaskService.findByTaskId(taskTmp.getId());
+            model.addAttribute("subtasks", subtasksTmp);
         }
         model.addAttribute("task", taskTmp);
         model.addAttribute("categories", categories);
@@ -117,45 +119,85 @@ public class MainController {
         return "redirect:/";
     }
 
-    @GetMapping("/sort/{sortDate}")
-    public String sortChoose(@PathVariable String sortDate) {
+    @GetMapping("/sortCreateDate/{sortDate}")
+    public String sortCreateDate(@PathVariable String sortDate) {
+        sortDateMethod = sortDate;
+        return "redirect:/";
+    }
+
+    @GetMapping("/sortCompletionDate/{sortDate}")
+    public String sortCompletionDate(@PathVariable String sortDate) {
+        sortDateMethod = sortDate;
+        return "redirect:/";
+    }
+
+    @GetMapping("/sortTaskName/{sortDate}")
+    public String sortTaskName(@PathVariable String sortDate) {
         sortDateMethod = sortDate;
         return "redirect:/";
     }
 
     @PostMapping("/setCompletionDate")
-    public String setCompletionDate(@RequestParam Date dateCompletion) throws ParseException {
-        dateCompletion = setDate(dateCompletion);
-        taskService.updateTask(taskTmp, taskTmp.getTaskName(), taskTmp.getDateCreate(), dateCompletion, taskTmp.getSubtasks(), taskTmp.getCategory());
+    public String setCompletionDate(@RequestParam Date dateCompletion){
+        List<Subtask> subtasks = new ArrayList<>();
+        subtasks.addAll(taskTmp.getSubtasks());
+        taskService.updateTask(taskTmp, taskTmp.getTaskName(), taskTmp.getDateCreate(), dateCompletion, subtasks, taskTmp.getCategory(), taskTmp.getComment(), taskTmp.isTaskDone());
         return "redirect:/";
+    }
+
+    @PostMapping("/isDone")
+    public String subtaskIsDone(@RequestParam(value = "value", required = false) String[] value){
+        subtaskDoneList(value);
+        taskService.updateTask(taskTmp, taskTmp.getTaskName(), taskTmp.getDateCreate(), taskTmp.getDateCompletion(),
+                subtasksTmp, taskTmp.getCategory(), taskTmp.getComment(), taskTmp.isTaskDone());
+        return "redirect:/";
+    }
+
+    @PostMapping("/isTaskDone")
+    public String taskIsDone(@RequestParam(value = "isTaskDone", required = false) String isTaskDone){
+        if (isTaskDone == null){
+            taskTmp.setTaskDone(true);
+        } else {
+            taskTmp.setTaskDone(false);
+        }
+        taskService.updateTask(taskTmp, taskTmp.getTaskName(), taskTmp.getDateCreate(), taskTmp.getDateCompletion(),
+                taskTmp.getSubtasks(), taskTmp.getCategory(), taskTmp.getComment(), taskTmp.isTaskDone());
+        return "redirect:/";
+    }
+
+    private void subtaskDoneList(String[] doneList){
+        for (Subtask subtask : subtasksTmp){
+            subtask.setDone(false);
+        }
+        for (int i = 0; i < doneList.length; i+=2){
+            Integer index = Integer.valueOf(doneList[i]);
+            subtasksTmp.get(index).setDone(true);
+        }
+
     }
 
     private List<Task> filterAndSort(Long id) {
         List<Task> tasks = null;
         switch (sortDateMethod) {
-            case "ASC":
+            case "ASC_Create":
                 tasks = taskService.findAllByCategory_IdOrderByDateCreateAsc(id);
                 break;
-            case "DESC":
+            case "DESC_Create":
                 tasks = taskService.findAllByCategory_IdOrderByDateCreateDesc(id);
+                break;
+            case "ASC_Completion":
+                tasks = taskService.findAllByCategory_IdOrderByDateCompletionAsc(id);
+                break;
+            case "DESC_Completion":
+                tasks = taskService.findAllByCategory_IdOrderByDateCompletionDesc(id);
+                break;
+            case "ASC_TaskName":
+                tasks = taskService.findAllByCategory_IdOrderByTaskNameAsc(id);
+                break;
+            case "DESC_TaskName":
+                tasks = taskService.findAllByCategory_IdOrderByTaskNameDesc(id);
                 break;
         }
         return tasks;
-    }
-
-    private Date setDate(Date date) throws ParseException {
-        String [] time = date.toString().split(" ");
-        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-        Date dateNaw = new Date();
-        String tmp = dateFormat.format(dateNaw);
-        time[3] = tmp;
-        String newTime = "";
-        for (String str : time){
-            newTime = str + " ";
-        }
-        String s = newTime.substring(0, newTime.length()-1);
-        dateNaw = dateFormat.parse(s);
-        System.out.println(dateNaw);
-        return dateNaw;
     }
 }

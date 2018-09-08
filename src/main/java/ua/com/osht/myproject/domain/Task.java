@@ -15,6 +15,9 @@ public class Task {
     private String taskName;
     private Date dateCreate;
     private Date dateCompletion;
+    private Boolean taskDone;
+    @Column(length = 65535, columnDefinition = "text")
+    private String comment;
 
     @OneToMany(mappedBy = "task",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Subtask> subtasks = new ArrayList<>();
@@ -30,7 +33,9 @@ public class Task {
         this.taskName = taskName;
         this.category = category;
         this.dateCreate = new Date();
+        this.taskDone = false;
     }
+
 
     public Long getId() {
         return id;
@@ -88,5 +93,21 @@ public class Task {
 
     public void setDateCompletion(Date dateCompletion) {
         this.dateCompletion = dateCompletion;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Boolean isTaskDone() {
+        return taskDone;
+    }
+
+    public void setTaskDone(Boolean taskDone) {
+        this.taskDone = taskDone;
     }
 }

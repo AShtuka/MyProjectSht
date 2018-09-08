@@ -6,26 +6,36 @@
     <nav class="navbar navbar-light bg-light">
         <div class="dropdown">
             <a href="#" id="dropdownMenuLinkTask" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: black">
-                <span class="navbar-brand mb-0 h1" th:text="${task != null} ? ${task.taskName} : 'Task Name'"></span>
+                <span th:if="${task != null && task.taskDone == false}" class="navbar-brand mb-0 h1" th:text="${task.taskName}"></span>
+                <span th:if="${task != null && task.taskDone == true}" style="text-decoration:line-through" class="navbar-brand mb-0 h1" th:text="${task.taskName}"></span>
+                <span th:if="${task == null}">Task name</span>
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLinkTask" th:if="${task != null}">
                 <a class="dropdown-item" name="categoryId" th:value="${task.category.id}" th:href="@{'/delete/task/{taskId}/{categoryId}'(taskId=${task.id}, categoryId=${task.category.id})}">Delete task<i class="fa fa-trash" style="font-size:20px; text-indent: 25px"></i></a>
             </div>
         </div>
+        <form name="isTaskDone">
         <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="customCheck1">
-            <label class="custom-control-label" for="customCheck1"><i class="fa fa-check" style="font-size:20px"></i></label>
+            <input type="checkbox" th:if="${task != null}" class="custom-control-input" th:checked="${task.taskDone}" id="customCheck1" name="isTaskDone">
+            <label class="custom-control-label" for="customCheck1" onclick="sends();"><i class="fa fa-check" style="font-size:20px"></i></label>
         </div>
+        </form>
+        <script>
+            function sends() {
+                var formData = new FormData(document.forms.isTaskDone);
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/isTaskDone");
+                xhr.send(formData);
+            }
+        </script>
     </nav>
 
     <nav class="nav flex-column"  th:if="${task != null}">
         <form role="form" enctype="multipart/form-data" action="/setCompletionDate" method="post">
-        <input id="datepicker" name="dateCompletion" class="btn-block" placeholder="Set completion date" />
-        <script>
-            $('#datepicker').datepicker({
-                uiLibrary: 'bootstrap4'
-            });
-        </script>
+            <input id="input" name="dateCompletion" width="312" placeholder="Completion Date" />
+            <script>
+                $('#input').datetimepicker({ footer: true, modal: true });
+            </script>
         </form>
         <table class="table table-striped">
             <thead>
@@ -39,38 +49,88 @@
             <tr th:each="subtask : ${subtasks}">
                 <th>
                     <div class="custom-control custom-checkbox">
-                         <input type="checkbox" class="custom-control-input" th:id="${subtask.id}">
-                         <label class="custom-control-label" th:for="${subtask.id}"></label>
+                        <a th:href="@{'/isDone/{subtaskId}'(subtaskId=${subtask.id})}">
+                         <input type="checkbox" name="isDone" th:checked="${subtask.done}" th:value="${subtask.done}" class="custom-control-input" th:id="${subtask.id}">
+                         <label class="custom-control-label" onclick="confirmButton();" th:for="${subtask.id}"></label>
+                        </a>
                     </div>
                 </th>
-                <td th:text="${subtask.subtaskName}" class="text-left">Mark of anything</td>
+                <td th:if="${subtask.done == false}" th:text="${subtask.subtaskName}" class="text-left"></td>
+                <td th:if="${subtask.done == true}" th:text="${subtask.subtaskName}" class="text-left" style="text-decoration: line-through; color: black"></td>
                 <td><a class="fa fa-times" th:href="@{'/delete/subtask/{subtaskId}/{taskId}'(subtaskId=${subtask.id}, taskId=${subtask.task.id})}" style="text-decoration: none; color: black"></a></td>
             </tr>
             </tbody>
         </table>
+        <div id="confirmButton" style="display: none">
+            <button type="button" onclick="getCheckedCheckBox()" class="btn btn-secondary btn-sm btn-block">Confirm your choice</button>
+        </div>
+        <script>
+            function getCheckedCheckBoxes() {
+                var checkboxes = document.getElementsByName('isDone');
+                var checkboxesChecked = []; // можно в массиве их хранить, если нужно использовать
+                for (var index = 0; index < checkboxes.length; index++) {
+                    if (checkboxes[index].checked) {
+                        checkboxesChecked.push(index); // положим в массив выбранный
+                        checkboxesChecked.push(checkboxes[index].value); // положим в массив выбранный
+                    }
+                }
+                return checkboxesChecked; // для использования в нужном месте
+            }
+            function getCheckedCheckBox() {
+                var formData = new FormData(document.forms.isSubTaskDone);
+                formData.append("value", getCheckedCheckBoxes());
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/isDone");
+                xhr.send(formData);
+            }
+        </script>
+        <script>
+            function confirmButton() {
+                document.getElementById("confirmButton").style.display = 'block';
+            }
+        </script>
         <form role="form" enctype="multipart/form-data" action="/addSubtask" method="post">
         <div class="input-group mb-3">
             <div class="input-group-prepend">
-                <button class="btn btn-primary" type="submit" style="color: black"><a class="fa fa-plus" style="text-decoration: none; color: black"></a></button>
+                <button class="btn btn-primary btn-light" type="submit" style="background: lightgrey"><a class="fa fa-plus" style="text-decoration: none; color: black"></a></button>
             </div>
             <input type="text" class="form-control" name="subtaskName" placeholder="Add subtask" aria-label="Add subtask" aria-describedby="basic-addon1">
         </div>
         </form>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th style="width: 95%"></th>
-                <th style="width: 5%"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td class="text-left">Your comment</td>
-                <td><a class="fa fa-times" href="#" style="text-decoration: none; color: black"></a></td>
-            </tr>
-            </tbody>
-        </table>
-        <a class="nav-link h6" href="#">Add comment</a>
+        <div th:if="${task.comment != null}">
+            <div>
+                 <p style="white-space: pre-wrap" th:text="${task.comment}"></p>
+            </div>
+        </div>
+        <form role="form" enctype="multipart/form-data" action="/addComment" method="post">
+        <!-- Button trigger modal -->
+        <div style="text-align: center">
+            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#Comment">
+                <a style="color: black" >Add comment</a>
+            </button>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="Comment" tabindex="-1" role="dialog" aria-labelledby="CommentTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="CommentTitle">Your comment</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="padding-left: 73px">
+                            <textarea class="form-control" name="comment" rows="15" style="width:350px" th:text="${task.comment}"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-light">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
     </nav>
 </div>
 </html>

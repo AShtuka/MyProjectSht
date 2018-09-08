@@ -38,13 +38,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateTask(Task task, String taskName, Date dateCrete, Date dateCompletion, List<Subtask> subtasks, Category category) {
+    public void updateTask(Task task, String taskName, Date dateCrete, Date dateCompletion, List<Subtask> subtasks, Category category, String comment, Boolean taskDone) {
         task.setTaskName(taskName);
         task.setDateCreate(dateCrete);
         task.setDateCompletion(dateCompletion);
         task.getSubtasks().clear();
         task.getSubtasks().addAll(subtasks);
         task.setCategory(category);
+        task.setComment(comment);
+        task.setTaskDone(taskDone);
         taskRepository.save(task);
     }
 
@@ -60,8 +62,28 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public List<Task> findAllByCategory_IdOrderByDateCompletionAsc(Long id) {
+        return taskRepository.findAllByCategory_IdOrderByDateCompletionAsc(id);
+    }
+
+    @Override
+    public List<Task> findAllByCategory_IdOrderByTaskNameAsc(Long id) {
+        return taskRepository.findAllByCategory_IdOrderByTaskNameAsc(id);
+    }
+
+    @Override
     public List<Task> findAllByCategory_IdOrderByDateCreateDesc(Long id) {
         return taskRepository.findAllByCategory_IdOrderByDateCreateDesc(id);
+    }
+
+    @Override
+    public List<Task> findAllByCategory_IdOrderByDateCompletionDesc(Long id) {
+        return taskRepository.findAllByCategory_IdOrderByDateCompletionDesc(id);
+    }
+
+    @Override
+    public List<Task> findAllByCategory_IdOrderByTaskNameDesc(Long id) {
+        return taskRepository.findAllByCategory_IdOrderByTaskNameDesc(id);
     }
 
 

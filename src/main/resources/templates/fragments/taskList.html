@@ -48,8 +48,12 @@
         </div>
         </div>
         </form>
-        <button type="button" class="btn btn-light text-left"><i class="fa fa-sort-alpha-asc" style="font-size:20px"></i></button>
-        <button type="button" class="btn btn-light text-left"><i class="fa fa-sort-alpha-desc" style="font-size:20px"></i></i></button>
+            <form role="form" enctype="multipart/form-data" th:action="@{'/sortTaskName/{sortDate}' (sortDate = 'ASC_TaskName')}" method="get">
+                <button type="submit" class="btn btn-light text-left"><i class="fa fa-sort-alpha-asc" style="font-size:20px"></i></button>
+            </form>
+            <form role="form" enctype="multipart/form-data" th:action="@{'/sortTaskName/{sortDate}' (sortDate = 'DESC_TaskName')}" method="get">
+                <button type="submit" class="btn btn-light text-left"><i class="fa fa-sort-alpha-desc" style="font-size:20px"></i></i></button>
+            </form>
         </div>
     </nav>
 
@@ -59,22 +63,52 @@
         <tr>
             <th class="text-left" style="width: 70%">Task</th>
             <th class="dropdown text-center" style="width: 15%">Creation date
-                <a th:href="@{'/sort/{sortDate}' (sortDate = 'ASC')}"><i class="fa fa-chevron-circle-up"></i></a>
-                <a th:href="@{'/sort/{sortDate}' (sortDate = 'DESC')}"><i class="fa fa-chevron-circle-down"></i></a>
+                <a th:href="@{'/sortCreateDate/{sortDate}' (sortDate = 'ASC_Create')}"><i class="fa fa-chevron-circle-up"></i></a>
+                <a th:href="@{'/sortCreateDate/{sortDate}' (sortDate = 'DESC_Create')}"><i class="fa fa-chevron-circle-down"></i></a>
             </th>
             <th class="dropdown text-center" style="width: 15%">Completion date
-                <a th:href="@{'/sort/{sortDate}' (sortDate = 'ASC')}"><i class="fa fa-chevron-circle-up"></i></a>
-                <a th:href="@{'/sort/{sortDate}' (sortDate = 'DESC')}"><i class="fa fa-chevron-circle-down"></i></a>
+                <a th:href="@{'/sortCompletionDate/{sortDate}' (sortDate = 'ASC_Completion')}"><i class="fa fa-chevron-circle-up"></i></a>
+                <a th:href="@{'/sortCompletionDate/{sortDate}' (sortDate = 'DESC_Completion')}"><i class="fa fa-chevron-circle-down"></i></a>
             </th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="task : ${tasks}">
+            <div th:if="${task.taskDone == false}">
             <td class="text-left"><a th:href="@{'/task/{id}'(id=${task.id})}" th:text="${task.taskName}" style="text-decoration: none; color: black">TaskName</a></td>
             <td th:text="${#dates.format(task.dateCreate, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">Date</td>
             <td th:text="${#dates.format(task.dateCompletion, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">None</td>
+            </div>
         </tr>
         </tbody>
     </table>
+    <div th:if="${category != null}">
+    <button type="button" onclick="showTaskDone();" class="btn btn-secondary btn-sm btn-block">Show completed tasks</button>
+    </div>
+    <script>
+        function showTaskDone() {
+            document.getElementById("showTaskDoneTable").style.display = 'block';
+        }
+    </script>
+    <div id="showTaskDoneTable" style="display: none">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th class="text-left" style="width: 70%"></th>
+                <th class="dropdown text-center" style="width: 15%"></th>
+                <th class="dropdown text-center" style="width: 15%"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${tasks}">
+                <div th:if="${task.taskDone == true}">
+                    <td class="text-left"><a th:href="@{'/task/{id}'(id=${task.id})}" th:text="${task.taskName}" style="text-decoration: line-through; color: black">TaskName</a></td>
+                    <td th:text="${#dates.format(task.dateCreate, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">Date</td>
+                    <td th:text="${#dates.format(task.dateCompletion, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">None</td>
+                </div>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 </html>
