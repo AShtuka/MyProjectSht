@@ -26,13 +26,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateTask(Long id, String taskName) {
-        Task task = getTaskById(id);
-        task.setTaskName(taskName);
-        taskRepository.save(task);
-    }
-
-    @Override
     public void deleteTask(Long id) {
         taskRepository.deleteById(id);
     }
@@ -48,12 +41,6 @@ public class TaskServiceImpl implements TaskService {
         task.setComment(comment);
         task.setTaskDone(taskDone);
         taskRepository.save(task);
-    }
-
-
-    @Override
-    public List<Task> findByCategoryId(Long id) {
-        return taskRepository.findByCategory_Id(id);
     }
 
     @Override

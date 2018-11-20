@@ -10,6 +10,6 @@ public interface CategoryService {
     void saveCategory(Category category);
     void updateCategory(Long id, String categoryName);
     void deleteCategory(Long id);
-    List<Category> findAll();
+    List<Category> findByUserId(Long id);
 
 }

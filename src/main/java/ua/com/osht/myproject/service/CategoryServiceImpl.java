@@ -37,8 +37,9 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public List<Category> findAll() {
-        return repository.findAll();
+    public List<Category> findByUserId(Long id) {
+        return repository.findByUserId(id);
     }
+
 
 }

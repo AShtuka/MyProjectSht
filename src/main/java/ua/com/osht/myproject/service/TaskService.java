@@ -10,10 +10,8 @@ import java.util.List;
 public interface TaskService {
     Task getTaskById(Long id);
     void saveTask(Task task);
-    void updateTask(Long id, String taskName);
     void deleteTask(Long id);
     void updateTask(Task task, String taskName, Date dateCrete, Date dateCompletion, List<Subtask> subtasks, Category category, String comment, Boolean taskDone);
-    List<Task> findByCategoryId(Long id);
     List<Task> findAllByCategory_IdOrderByDateCreateAsc(Long id);
     List<Task> findAllByCategory_IdOrderByDateCompletionAsc(Long id);
     List<Task> findAllByCategory_IdOrderByTaskNameAsc(Long id);

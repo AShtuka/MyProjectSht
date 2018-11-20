@@ -78,5 +78,31 @@ public class Subtask {
                 }
 
             </script>
+
+              <script>
+            function getCheckedCheckBoxes() {
+                var checkboxes = document.getElementsByName('isDone');
+                var checkboxesChecked = []; // можно в массиве их хранить, если нужно использовать
+                for (var index = 0; index < checkboxes.length; index++) {
+                    if (checkboxes[index].checked) {
+                        checkboxesChecked.push(index); // положим в массив выбранный
+                        checkboxesChecked.push(checkboxes[index].value); // положим в массив выбранный
+                    }
+                }
+                return checkboxesChecked; // для использования в нужном месте
+            }
+            function getCheckedCheckBox() {
+                var formData = new FormData(document.forms.isSubTaskDone);
+                formData.append("value", getCheckedCheckBoxes());
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "/taskManager/isDone");
+                xhr.send(formData);
+            }
+        </script>
+        <script>
+            function confirmButton() {
+                document.getElementById("confirmButton").style.display = 'block';
+            }
+        </script>
      */
 }

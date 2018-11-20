@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body style="background: url(css/images/st.jpg) no-repeat; -moz-background-size: 100%; -webkit-background-size: 100%; background-size: 100%">
+<h1>List of users</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Role</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.userName}" ></td>
+        <td th:each="role : ${user.roles}" th:text="${role} + ' '"></td>
+        <td><a th:href="@{'/adminPage/user/{id}'(id=${user.id})}">edit</a></td>
+    </tr>
+    </tbody>
+</table>
+<p>Click <a th:href="@{/taskManager}">here</a> to see a taskManager.</p>
+
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

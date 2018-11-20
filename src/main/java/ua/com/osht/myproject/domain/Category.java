@@ -12,6 +12,8 @@ public class Category {
     private Long id;
     private String categoryName;
     private Long taskCount;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User user;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Task> tasks;
@@ -20,8 +22,9 @@ public class Category {
     public Category() {
     }
 
-    public Category(String categoryName) {
+    public Category(String categoryName, User user) {
         this.categoryName = categoryName;
+        this.user = user;
     }
 
     public Long getId() {
@@ -64,5 +67,13 @@ public class Category {
 
     public void setTaskCount(Long taskCount) {
         this.taskCount = taskCount;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

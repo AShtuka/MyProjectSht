@@ -10,7 +10,7 @@
                 <span class="navbar-brand mb-0 h1" th:text="${category != null} ? ${category.categoryName} : 'Category Name'"></span>
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLinkCategory" th:if="${category != null}">
-                <a class="dropdown-item" th:href="@{'/delete/category/{id}'(id=${category.id})}">Delete category<i class="fa fa-trash" style="font-size:20px; text-indent: 25px"></i></a>
+                <a class="dropdown-item" th:href="@{'/taskManager/delete/category/{id}'(id=${category.id})}">Delete category<i class="fa fa-trash" style="font-size:20px; text-indent: 25px"></i></a>
             </div>
         </div>
         <!-- Згортає в одну кнопку усе що знаходиться у навбарі при змині розміру монітора -->
@@ -21,7 +21,7 @@
         <div class="collapse navbar-collapse" id="navbarTogglerTask">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
 
-        <form role="form" enctype="multipart/form-data" action="/addTask" method="post">
+        <form role="form" enctype="multipart/form-data" action="/taskManager/addTask" method="post">
         <div th:if="${category != null}">
         <button type="button" class="btn btn-light text-left" data-toggle="modal" data-target="#taskModal">
             Add task
@@ -39,6 +39,7 @@
                     <div class="modal-body" th:if="${category != null}" >
                         <input class="form-control" name="taskName" type="text" placeholder="Task name">
                         <input type="hidden" name="categoryId" th:value="${category.id}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary btn-light">Save</button>
@@ -48,10 +49,10 @@
         </div>
         </div>
         </form>
-            <form role="form" enctype="multipart/form-data" th:action="@{'/sortTaskName/{sortDate}' (sortDate = 'ASC_TaskName')}" method="get">
+            <form role="form" enctype="multipart/form-data" th:action="@{'/taskManager/sortTaskName/{sortDate}' (sortDate = 'ASC_TaskName')}" method="get">
                 <button type="submit" class="btn btn-light text-left"><i class="fa fa-sort-alpha-asc" style="font-size:20px"></i></button>
             </form>
-            <form role="form" enctype="multipart/form-data" th:action="@{'/sortTaskName/{sortDate}' (sortDate = 'DESC_TaskName')}" method="get">
+            <form role="form" enctype="multipart/form-data" th:action="@{'/taskManager/sortTaskName/{sortDate}' (sortDate = 'DESC_TaskName')}" method="get">
                 <button type="submit" class="btn btn-light text-left"><i class="fa fa-sort-alpha-desc" style="font-size:20px"></i></i></button>
             </form>
         </div>
@@ -63,19 +64,19 @@
         <tr>
             <th class="text-left" style="width: 70%">Task</th>
             <th class="dropdown text-center" style="width: 15%">Creation date
-                <a th:href="@{'/sortCreateDate/{sortDate}' (sortDate = 'ASC_Create')}"><i class="fa fa-chevron-circle-up"></i></a>
-                <a th:href="@{'/sortCreateDate/{sortDate}' (sortDate = 'DESC_Create')}"><i class="fa fa-chevron-circle-down"></i></a>
+                <a th:href="@{'/taskManager/sortCreateDate/{sortDate}' (sortDate = 'ASC_Create')}"><i class="fa fa-chevron-circle-up"></i></a>
+                <a th:href="@{'/taskManager/sortCreateDate/{sortDate}' (sortDate = 'DESC_Create')}"><i class="fa fa-chevron-circle-down"></i></a>
             </th>
             <th class="dropdown text-center" style="width: 15%">Completion date
-                <a th:href="@{'/sortCompletionDate/{sortDate}' (sortDate = 'ASC_Completion')}"><i class="fa fa-chevron-circle-up"></i></a>
-                <a th:href="@{'/sortCompletionDate/{sortDate}' (sortDate = 'DESC_Completion')}"><i class="fa fa-chevron-circle-down"></i></a>
+                <a th:href="@{'/taskManager/sortCompletionDate/{sortDate}' (sortDate = 'ASC_Completion')}"><i class="fa fa-chevron-circle-up"></i></a>
+                <a th:href="@{'/taskManager/sortCompletionDate/{sortDate}' (sortDate = 'DESC_Completion')}"><i class="fa fa-chevron-circle-down"></i></a>
             </th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="task : ${tasks}">
             <div th:if="${task.taskDone == false}">
-            <td class="text-left"><a th:href="@{'/task/{id}'(id=${task.id})}" th:text="${task.taskName}" style="text-decoration: none; color: black">TaskName</a></td>
+            <td class="text-left"><a th:href="@{'/taskManager/task/{id}'(id=${task.id})}" th:text="${task.taskName}" style="text-decoration: none; color: black">TaskName</a></td>
             <td th:text="${#dates.format(task.dateCreate, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">Date</td>
             <td th:text="${#dates.format(task.dateCompletion, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">None</td>
             </div>
@@ -102,7 +103,7 @@
             <tbody>
             <tr th:each="task : ${tasks}">
                 <div th:if="${task.taskDone == true}">
-                    <td class="text-left"><a th:href="@{'/task/{id}'(id=${task.id})}" th:text="${task.taskName}" style="text-decoration: line-through; color: black">TaskName</a></td>
+                    <td class="text-left"><a th:href="@{'/taskManager/task/{id}'(id=${task.id})}" th:text="${task.taskName}" style="text-decoration: line-through; color: black">TaskName</a></td>
                     <td th:text="${#dates.format(task.dateCreate, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">Date</td>
                     <td th:text="${#dates.format(task.dateCompletion, 'EEE, d MMM yyyy HH:mm')}" style="text-align: center">None</td>
                 </div>
