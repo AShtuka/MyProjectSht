@@ -12,8 +12,10 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-    private String userName;
+    private String username;
     private String password;
+    private String email;
+    private String activationCode;
     private boolean isActive;
     private boolean admin;
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -29,12 +31,12 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
@@ -44,11 +46,6 @@ public class User implements UserDetails {
 
     public String getPassword() {
         return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
     }
 
     @Override
@@ -99,8 +96,19 @@ public class User implements UserDetails {
         this.admin = admin;
     }
 
-    /*
-    <a th:if="user != null" class="navbar-brand" th:value="${user.userName}">Welcome guest</a>
-        <a th:if="user == null" class="navbar-brand">Welcome guest</a>
-     */
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getActivationCode() {
+        return activationCode;
+    }
+
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
+    }
 }

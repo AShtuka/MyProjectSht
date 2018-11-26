@@ -3,6 +3,14 @@
     padding-left:0;
 }
 
-body {
-    background: url(images/st.jpg);
+.forBody {
+    background: url(../image/st.jpg) no-repeat;
+    -moz-background-size: 100%;
+    -webkit-background-size: 100%;
+    background-size: 100%
 }
+
+.top-buffer {
+    margin-top:150px;
+}
+

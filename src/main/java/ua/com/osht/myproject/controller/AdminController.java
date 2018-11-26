@@ -1,6 +1,7 @@
 package ua.com.osht.myproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/adminPage")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
     @Autowired
     private UserServiceImpl userService;
@@ -40,7 +42,7 @@ public class AdminController {
             @RequestParam Map<String, String> form,
             @RequestParam("id") User user
     ){
-        user.setUserName(username);
+        user.setUsername(username);
         user.setPassword(password);
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Role::name)
