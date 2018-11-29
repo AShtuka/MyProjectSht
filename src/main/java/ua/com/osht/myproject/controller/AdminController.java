@@ -2,6 +2,7 @@ package ua.com.osht.myproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,25 +10,24 @@ import ua.com.osht.myproject.domain.Role;
 import ua.com.osht.myproject.domain.User;
 import ua.com.osht.myproject.service.UserServiceImpl;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/adminPage")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
     @Autowired
     private UserServiceImpl userService;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public String userList(Model model){
         model.addAttribute("users", userService.findAll());
         return "adminPage";
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("user/{user}")
     public String userEdit(@PathVariable User user, Model model){
         model.addAttribute("user", user);
@@ -35,6 +35,7 @@ public class AdminController {
         return "userEdit";
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public String userSave(
             @RequestParam String username,
@@ -42,23 +43,23 @@ public class AdminController {
             @RequestParam Map<String, String> form,
             @RequestParam("id") User user
     ){
-        user.setUsername(username);
-        user.setPassword(password);
-        Set<String> roles = Arrays.stream(Role.values())
-                .map(Role::name)
-                .collect(Collectors.toSet());
-        user.getRoles().clear();
-        user.setAdmin(false);
-        for (String key : form.keySet()){
-            if (roles.contains(key)){
-                user.getRoles().add(Role.valueOf(key));
-                if (Role.valueOf(key).equals(Role.ADMIN)){
-                    user.setAdmin(true);
-                }
-            }
-        }
-        userService.saveUser(user);
+        userService.userSave(username, password, form, user);
         return "redirect:adminPage";
+    }
+
+    @GetMapping("/profile")
+    public String getProfile(Model model, @AuthenticationPrincipal User user){
+                model.addAttribute("user", user);
+                return "profile";
+    }
+
+    @PostMapping("/profile")
+    public String updateProfile(@AuthenticationPrincipal User user,
+                                @RequestParam String username,
+                                @RequestParam String password,
+                                @RequestParam String email){
+        userService.updateProfile(user, username, password, email);
+        return "redirect:/adminPage/profile";
     }
 
     private Map<Role, Boolean> getRolesMap(User user){
