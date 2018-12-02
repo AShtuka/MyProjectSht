@@ -7,7 +7,7 @@
         <!-- Header - LEFT PART -->
         <nav class="navbar navbar-light bg-light">
             <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     UserLogo
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -16,34 +16,24 @@
                 </div>
             </div>
 
-            <!-- Add category Button - LEFT PART -->
-            <form role="form" enctype="multipart/form-data" action="/taskManager/addCategory" method="post">
-            <button type="button" class="btn btn-light text-left" data-toggle="modal" data-target="#categoryModal">
+            <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#categoryName" aria-expanded="false" aria-controls="collapseExample">
                 Add category
             </button>
-            <!-- Modal -->
-            <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="categoryModalLabel">Add category</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+            <div class="collapse" id="categoryName">
+                <div class="form-group">
+                    <form role="form" enctype="multipart/form-data" action="/taskManager/addCategory" method="post" class="needs-validation" novalidate>
+                        <input class="form-control top-input " type="text" name="categoryName" placeholder="Name of category" required>
+                        <div class="valid-feedback" style="margin-left: 28px">
+                            Looks good!
                         </div>
-                        <div class="modal-body">
-                            <input class="form-control" type="text" name="categoryName" placeholder="Category name">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <div class="invalid-feedback" style="margin-left: 28px">
+                            Name of category can't be empty!
                         </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary btn-light">Save</button>
-                        </div>
-                    </div>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    </form>
                 </div>
             </div>
-            </form>
         </nav>
-
 
         <!-- Category list - LEFT PART -->
         <ul class="list-group">

@@ -14,11 +14,6 @@ import ua.com.osht.myproject.service.CategoryService;
 import ua.com.osht.myproject.service.SubtaskService;
 import ua.com.osht.myproject.service.TaskService;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -66,6 +61,23 @@ public class MainController {
         taskTmp = null;
         return "redirect:/taskManager";
     }
+
+   /* @PostMapping("addCategory")
+    public String addCategory(@AuthenticationPrincipal User user,
+                              @Valid Category category,
+                              BindingResult bindingResult,
+                              Model model){
+        category.setUser(user);
+        if (bindingResult.hasErrors()){
+            Map<String, String> errorsMap = ControllerUtils.getErrors(bindingResult);
+            model.mergeAttributes(errorsMap);
+        } else {
+            categoryService.saveCategory(category);
+            categoryTmp = category;
+            taskTmp = null;
+        }
+        return "redirect:/taskManager";
+    }*/
 
     @GetMapping("delete/category/{id}")
     public String deleteCategory(@PathVariable Long id) {

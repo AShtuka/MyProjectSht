@@ -4,35 +4,65 @@
 <head th:replace="fragments/head :: head"></head>
 <body class="forBody">
 <div class="container top-buffer" style="width: 700px;">
-    <div th:if="${message != null}" class="text-center">
+    <div th:if="${message != null}" class="text-center" style="color: red">
         <a th:text="${message}"></a>
     </div>
-    <div th:if="${param.error}" class="text-center">
-        Invalid username and password.
-    </div>
-    <div th:if="${param.logout}" class="text-center">
-        You have been logged out.
-    </div>
-    <form th:action="@{'/registration'}" method="post">
+    <form th:action="@{'/registration'}" method="post" class="needs-validation" novalidate>
         <div class="form-group row">
             <label for="inputUserName" class="col-sm-2 col-form-label">User name</label>
             <div class="col-sm-10">
-                <input type="text" name="username" class="form-control" id="inputUserName" placeholder="User name">
+                <input type="text" name="username" class="form-control" id="inputUserName" placeholder="User name" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div class="invalid-feedback">
+                    User name can't be empty!
+                </div>
             </div>
         </div>
         <div class="form-group row">
             <label for="inputEmailR" class="col-sm-2 col-form-label">Login</label>
             <div class="col-sm-10">
-                <input type="email" name="email" class="form-control" id="inputEmailR" placeholder="email@example.com">
+                <input type="email" name="email" class="form-control" id="inputEmailR" placeholder="email@example.com" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div class="invalid-feedback">
+                    Not correct email!
+                </div>
             </div>
         </div>
         <div class="form-group row">
             <label for="inputPasswordR" class="col-sm-2 col-form-label">Password</label>
             <div class="col-sm-10">
-                <input type="password" name="password" class="form-control" id="inputPasswordR" placeholder="Password">
+                <input type="password" name="password" class="form-control" id="inputPasswordR" placeholder="Password" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div class="invalid-feedback">
+                    Password can't be empty!
+                </div>
             </div>
         </div>
         <div class="form-group row">
+            <label for="inputPasswordRet" class="col-sm-2 col-form-label">Pass retype</label>
+            <div class="col-sm-10">
+                <input type="password" name="passwordRetype" class="form-control" id="inputPasswordRet" placeholder="Password retype" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div class="invalid-feedback">
+                    Password can't be empty!
+                </div>
+            </div>
+        </div>
+        <div th:if="${captchaError != null}" style="color: red">
+            <a th:text="${captchaError}"></a>
+        </div>
+        <div>
+            <div class="g-recaptcha" style="margin-left: 235px" data-sitekey="6LeXQ34UAAAAAPlSd7MZO9bC6S6ravPT77qAoFKc"></div>
+        </div>
+        <div class="form-group row" style="margin-top: 15px">
             <label for="subButR" class="col-sm-2 col-form-label">Registration</label>
             <div class="col-sm-10">
                 <button type="submit" id="subButR" class="btn btn-primary btn-block">Click to registration</button>

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ua.com.osht.myproject.domain.Role;
@@ -18,8 +19,12 @@ public class UserServiceImpl implements UserDetailsService, UserService{
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private MailSender mailSender;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
@@ -32,7 +37,7 @@ public class UserServiceImpl implements UserDetailsService, UserService{
 
     @Override
     public boolean addUser(User user) {
-        User userFromDb = userRepository.findByEmail(user.getEmail());
+        User userFromDb = findUserByEmail(user.getEmail());
 
         if (userFromDb != null){
             return false;
@@ -40,10 +45,15 @@ public class UserServiceImpl implements UserDetailsService, UserService{
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         sendMessage(user);
 
         return true;
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     private void sendMessage(User user) {
@@ -69,9 +79,8 @@ public class UserServiceImpl implements UserDetailsService, UserService{
         return true;
     }
 
-    public void userSave(String username, String password, Map<String, String> form, User user) {
+    public void userSave(String username, Map<String, String> form, User user) {
         user.setUsername(username);
-        user.setPassword(password);
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Role::name)
                 .collect(Collectors.toSet());
@@ -91,8 +100,7 @@ public class UserServiceImpl implements UserDetailsService, UserService{
     public void updateProfile(User user, String username, String password, String email) {
         String userEmail = user.getEmail();
 
-        boolean isEmailChanged = (email != null && !email.equals(userEmail)
-                || userEmail != null && !userEmail.equals(email));
+        boolean isEmailChanged = (!email.equals(userEmail));
 
         if (isEmailChanged){
             user.setEmail(email);
@@ -100,15 +108,8 @@ public class UserServiceImpl implements UserDetailsService, UserService{
                 user.setActivationCode(UUID.randomUUID().toString());
             }
         }
-
-        if (!StringUtils.isEmpty(username)){
-            user.setUsername(username);
-        }
-
-        if (!StringUtils.isEmpty(password)){
-            user.setPassword(password);
-        }
-
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
 
         if (isEmailChanged) {

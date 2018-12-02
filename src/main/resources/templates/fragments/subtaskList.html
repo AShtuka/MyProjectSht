@@ -88,15 +88,24 @@
                 document.getElementById("confirmButton").style.display = 'block';
             }
         </script>
-        <form role="form" enctype="multipart/form-data" action="/taskManager/addSubtask" method="post">
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <button class="btn btn-primary btn-light" type="submit" style="background: lightgrey"><a class="fa fa-plus" style="text-decoration: none; color: black"></a></button>
+
+        <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#subtaskName" aria-expanded="false" aria-controls="collapseExample">
+            Add subtask
+        </button>
+        <div class="collapse" id="subtaskName">
+            <div class="form-group">
+                <form role="form" enctype="multipart/form-data" action="/taskManager/addSubtask" method="post" class="needs-validation" novalidate>
+                    <input class="form-control" type="text" name="subtaskName" placeholder="Name of subtask" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Name of subtask can't be empty!
+                    </div>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                </form>
             </div>
-            <input type="text" class="form-control" name="subtaskName" placeholder="Add subtask" aria-label="Add subtask" aria-describedby="basic-addon1">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         </div>
-        </form>
         <div th:if="${task.comment != null}">
             <div>
                  <p style="white-space: pre-wrap" th:text="${task.comment}"></p>

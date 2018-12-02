@@ -3,6 +3,7 @@ package ua.com.osht.myproject.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,9 @@ import java.util.Set;
 public class AdminController {
     @Autowired
     private UserServiceImpl userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
@@ -39,11 +43,10 @@ public class AdminController {
     @PostMapping
     public String userSave(
             @RequestParam String username,
-            @RequestParam String password,
             @RequestParam Map<String, String> form,
             @RequestParam("id") User user
     ){
-        userService.userSave(username, password, form, user);
+        userService.userSave(username,form, user);
         return "redirect:adminPage";
     }
 
@@ -54,11 +57,26 @@ public class AdminController {
     }
 
     @PostMapping("/profile")
-    public String updateProfile(@AuthenticationPrincipal User user,
-                                @RequestParam String username,
-                                @RequestParam String password,
-                                @RequestParam String email){
-        userService.updateProfile(user, username, password, email);
+    public String updateProfile(Model model,
+                                @AuthenticationPrincipal User user,
+                                @RequestParam String newUsername,
+                                @RequestParam String newPassword,
+                                @RequestParam String passwordRetype,
+                                @RequestParam String newEmail){
+
+            if (userService.findUserByEmail(newEmail) != null){
+                model.addAttribute("user", user);
+                model.addAttribute("message", "User with login which you input already exists!");
+                return "/profile";
+            }
+
+            if (!newPassword.equals(passwordRetype)){
+                model.addAttribute("user", user);
+                model.addAttribute("message", "New password and passwordRetype are different!");
+                return "/profile";
+            }
+
+        userService.updateProfile(user, newUsername, newPassword, newEmail);
         return "redirect:/adminPage/profile";
     }
 

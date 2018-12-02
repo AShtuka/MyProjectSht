@@ -13,6 +13,7 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String taskName;
+
     private Date dateCreate;
     private Date dateCompletion;
     private Boolean taskDone;
